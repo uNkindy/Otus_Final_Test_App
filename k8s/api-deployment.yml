@@ -1,0 +1,47 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: gitlab-api
+  namespace: default
+  labels:
+    k8s-app: gitlab-api
+    project: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: gitlab-api
+  template:
+    metadata:
+      name: gitlab-api
+      labels:
+        k8s-app: gitlab-api
+    spec:
+      containers:
+      - name: gitlab-api
+        image: unkindy/gitlab-api:test_deploy
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: gitlab-pv
+          mountPath: /app/data
+      volumes:
+      - name: gitlab-pv
+        persistentVolumeClaim:
+          claimName: gitlab-pv-claim
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: gitlab-api
+  namespace: default
+  labels:
+    k8s-app: gitlab-api
+    project: gitlab
+spec:
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 4000
+  selector:
+    k8s-app: gitlab-api

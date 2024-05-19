@@ -1,0 +1,41 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: gitlab-spa
+  namespace: default
+  labels:
+    k8s-app: gitlab-spa
+    project: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: gitlab-spa
+  template:
+    metadata:
+      name: gitlab-spa
+      labels:
+        k8s-app: gitlab-spa
+    spec:
+      containers:
+      - name: gitlab-spa
+        image: unkindy/gitlab-spa:test_deploy
+        imagePullPolicy: IfNotPresent
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: gitlab-spa
+  namespace: default
+  labels:
+    k8s-app: gitlab-spa
+    project: gitlab
+spec:
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    k8s-app: gitlab-spa

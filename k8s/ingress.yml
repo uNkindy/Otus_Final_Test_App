@@ -1,0 +1,32 @@
+---
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: gitlab-ingress
+  # annotations:
+  #   kubernetes.io/ingress.class.name: "nginx"
+    # kubernetes.io/ingress.allow-http: "false"
+  namespace: default
+  labels:
+    project: gitlab
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: app.158.160.131.250.nip.io
+      http:
+        paths:
+          - path: /log
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                # name: gitlab-api
+                # port:
+                #   number: 80
+                name: gitlab-api
+                port:
+                  number: 80
+  defaultBackend:
+    service:
+      name: gitlab-spa
+      port:
+        number: 80
